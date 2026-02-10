@@ -43,7 +43,7 @@
 #include "driver/gpio.h"
 #include "esp_log.h"
 
-#define LED_GPIO GPIO_NUM_2
+#define LED_GPIO GPIO_NUM_2   // CHANGE for your board
 
 static const char *TAG = "LAB1";
 
@@ -73,6 +73,7 @@ void app_main(void)
 {
     ESP_LOGI(TAG, "Starting Lab 1 (two tasks)");
 
+    // Stack size in ESP-IDF FreeRTOS is in BYTES
     xTaskCreate(blink_task, "blink_task", 2048, NULL, 5, NULL);
     xTaskCreate(hello_task, "hello_task", 2048, NULL, 5, NULL);
 }
