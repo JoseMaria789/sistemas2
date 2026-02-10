@@ -122,6 +122,7 @@ void app_main(void)
     xTaskCreate(blink_task, "blink_task", 2048, NULL, 5, NULL);
     xTaskCreate(hello_task, "hello_task", 2048, NULL, 2, NULL);
 }
+```
 
 **Result & Explanation**
 
@@ -131,7 +132,7 @@ The behavior does not change noticeably because both tasks use vTaskDelay(), all
 
 Instruction:
 Temporarily remove vTaskDelay() from hello_task.
-
+```c
 -Modified Code (Problematic Version)
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
@@ -171,7 +172,7 @@ void app_main(void)
     xTaskCreate(blink_task, "blink_task", 2048, NULL, 5, NULL);
     xTaskCreate(hello_task, "hello_task", 2048, NULL, 2, NULL);
 }
-
+```
 **What Happens?**
 
 - hello_task runs continuously.
@@ -179,16 +180,17 @@ void app_main(void)
 - The LED stops blinking or behaves erratically.
 
 - hello_task monopolizes the CPU.
-
+```c
 **Fix (Restore Delay)**
 vTaskDelay(pdMS_TO_TICKS(1000));
-
+```
 One-Sentence Explanation
 
 Blocking allows FreeRTOS to schedule other tasks, preventing CPU starvation.
 ---
 ## Lab 2 — Queue: Producer / Consumer
-Original Code (Lab 2)
+-**Original Code (Lab 2)**
+```c
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -243,12 +245,13 @@ void app_main(void)
     xTaskCreate(producer_task, "producer_task", 2048, NULL, 5, NULL);
     xTaskCreate(consumer_task, "consumer_task", 2048, NULL, 5, NULL);
 }
+```
 
 ### Exercise 1 — Make the Producer Faster
 
 **Instruction:**
 Change producer delay 200 ms → 20 ms.
-
+```c
 Modified Code
 vTaskDelay(pdMS_TO_TICKS(20));
 
@@ -306,14 +309,14 @@ void app_main(void)
     xTaskCreate(producer_task, "producer_task", 2048, NULL, 5, NULL);
     xTaskCreate(consumer_task, "consumer_task", 2048, NULL, 5, NULL);
 }
-
+```
 - **Result & Explanation** 
 
 The producer generates data faster than the consumer can process it, causing the queue to fill up quickly and overflow.
 
 ### Exercise 2 — Increase Queue Length
--**Modified Code**
-
+- **Modified Code**
+```c
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -368,16 +371,15 @@ void app_main(void)
     xTaskCreate(producer_task, "producer_task", 2048, NULL, 5, NULL);
     xTaskCreate(consumer_task, "consumer_task", 2048, NULL, 5, NULL);
 }
-
--**Result & Explanation**
+```
+- **Result & Explanation**
 Queue overflow occurs less frequently because more elements can be buffered before reaching capacity.
 ---
+## Exercise 3 — Make the Consumer Slow
 
-- ##Exercise 3 — Make the Consumer Slow
-
-- **Instruction:**
+**Instruction:**
 Add a delay after a successful receive.
-
+```c
 Modified Code
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
@@ -434,11 +436,13 @@ void app_main(void)
     xTaskCreate(producer_task, "producer_task", 2048, NULL, 5, NULL);
     xTaskCreate(consumer_task, "consumer_task", 2048, NULL, 5, NULL);
 }
+```
 - **Pattern Observed**
 A backlog forms because the producer generates data faster than the consumer can process it.
 ---
 ## Lab 3 — Mutex: Protect a Shared Resource
 - **Part A — Race Condition (No Mutex)**
+```c
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -473,11 +477,13 @@ void app_main(void)
     xTaskCreate(increment_task, "incA", 2048, "TaskA", 5, NULL);
     xTaskCreate(increment_task, "incB", 2048, "TaskB", 5, NULL);
 }
+```
 - **Why Can the Counter Be Wrong?**
 Both tasks can read and write the shared variable simultaneously, causing lost updates due to race conditions.
 
 **Part B — Fix with a Mutex**
 - Modified Code
+```c
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -523,6 +529,7 @@ void app_main(void)
     xTaskCreate(increment_task, "incA", 2048, "TaskA", 5, NULL);
     xTaskCreate(increment_task, "incB", 2048, "TaskB", 5, NULL);
 }
+```
 - **Result & Explanation**
 The counter increases correctly because the mutex guarantees exclusive access to the shared resource.
 
@@ -531,6 +538,7 @@ The counter increases correctly because the mutex guarantees exclusive access to
 Removing the mutex causes the race condition to reappear, producing inconsistent counter values.
 ---
 ### Exercise — Change Task Priorities
+```c
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -577,7 +585,7 @@ void app_main(void)
     xTaskCreate(increment_task, "incB", 2048, "TaskB", 4, NULL);
 }
 - **Expected Result**
-
+```
 TaskA executes more frequently, but data integrity is still preserved because the mutex enforces mutual exclusion.
 
 
