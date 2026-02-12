@@ -1,4 +1,4 @@
-# Task exercise
+# Mini Challegends
 
 **Purpose of the session:**
 
